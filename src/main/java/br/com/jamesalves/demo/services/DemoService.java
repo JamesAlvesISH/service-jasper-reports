@@ -60,4 +60,28 @@ public class DemoService {
             e.printStackTrace();
         }
     }
+
+    public byte[] generateNewReport(String string) {
+        try {
+            File reportsDir = new File(REPORTS_DIRECTORY);
+            if (!reportsDir.exists()) {
+                reportsDir.mkdirs();
+            }
+
+            InputStream reportStream = getClass().getResourceAsStream("/reports/sample_report.jrxml");
+            JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+
+
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("PARAM1", "Parametro 1");
+            parameters.put("PARAM2", "Parametro 2 xpto");
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
+            String outputPath = REPORTS_DIRECTORY + "sample_report.pdf";
+            return JasperExportManager.exportReportToPdf(jasperPrint);
+            //System.out.println("Relatório salvo em: " + outputPath);
+        } catch (JRException e) {
+            e.printStackTrace();
+        }
+                return null;
+    }
 }
