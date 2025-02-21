@@ -61,14 +61,41 @@ public class DemoService {
         }
     }
 
-    public byte[] generateNewReport(String string) {
+    public byte[] generateNewReportPdf(String reportName, ReportParameters[] param, String conectionParameters) {
         try {
             File reportsDir = new File(REPORTS_DIRECTORY);
             if (!reportsDir.exists()) {
                 reportsDir.mkdirs();
             }
 
-            InputStream reportStream = getClass().getResourceAsStream("/reports/sample_report.jrxml");
+            InputStream reportStream = getClass().getResourceAsStream("/"+reportName+"/main.jrxml");
+            
+            JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+
+
+            Map<String, Object> parameters = new HashMap<>();
+
+            for (ReportParameters reportParameters : param) {
+                parameters.put(param.field, param.value);
+            }
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
+
+            return JasperExportManager.exportReportToPdf(jasperPrint);
+        } catch (JRException e) {
+            e.printStackTrace();
+        }
+                return null;
+    }
+
+    public byte[] generateNewReportDocx(String reportName) {
+        try {
+            File reportsDir = new File(REPORTS_DIRECTORY);
+            if (!reportsDir.exists()) {
+                reportsDir.mkdirs();
+            }
+
+            InputStream reportStream = getClass().getResourceAsStream("/"+reportName+"/sample_report.jrxml");
             JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
 
 

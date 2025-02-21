@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 public class HelloDemoController {
@@ -29,10 +30,28 @@ public class HelloDemoController {
         return "Greetings from Spring Boot!";
     }
 
-    @GetMapping("/report")
-    public ResponseEntity<byte[]> donwloadReport() {
+    @GetMapping("/getReport/{reportName}/pdf")
+    public ResponseEntity<byte[]> donwloadReportPDF(@PathVariable String reportName) {
         try {
-            byte[] report = domoService.generateNewReport("report-teste");
+            byte[] report = domoService.generateNewReportPdf(reportName);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", "user_report.pdf");
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(report);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @GetMapping("/getReport/{reportName}/docx")
+    public ResponseEntity<byte[]> donwloadReportDOCX(@PathVariable String reportName) {
+        try {
+            byte[] report = domoService.generateNewReportPdf(reportName);
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
             headers.setContentDispositionFormData("attachment", "user_report.pdf");
